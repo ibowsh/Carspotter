@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Compare Cars • CarSpotter</title>
+  <link rel="stylesheet" href="carspotter.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="carspotter(main-page).html"><span class="dot"></span>CarSpotter</a>
+      <nav>
+        <a href="carspotter(catalog-page).html">Catalog</a>
+        <a href="carspotter(compare-page).html">Compare</a>
+        <a href="carspotter(blog-page).html">News</a>
+        <a href="carspotter(events-page).html">Events</a>
+        <a href="carspotter(about-page).html" class="cta">About / Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container section-title">
+      <h1>Compare</h1>
+      <span class="muted">Add cars from detail pages</span>
+    </div>
+
+    <div class="container compare-grid" id="compare-grid"></div>
+
+    <div class="space"></div>
+    <div class="container">
+      <h2>Horsepower chart</h2>
+      <canvas class="chart-bars" id="hp-chart" style="width:100%;height:220px" data-series="[]"></canvas>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container inner">
+      <div class="row"><span class="brand"><span class="dot"></span>CarSpotter</span><span class="muted">Side-by-side insights</span></div>
+      <div class="row"><a href="carspotter(about-page).html">About</a><a href="carspotter(contact-page).html">Contact</a></div>
+    </div>
+  </footer>
+
+  <script src="carspotter.js"></script>
+  <script>
+    function render(){
+      const list = CarSpotter.getCompareList();
+      const grid = document.getElementById('compare-grid');
+      if(list.length === 0){ grid.innerHTML = '<div class="muted">No cars added yet. Browse the <a href="carspotter(catalog-page).html">catalog</a>.</div>'; }
+      else {
+        grid.innerHTML = list.map(c => `
+          <div class="table-like">
+            <div class="row"><div class="cell"><strong>${c.name}</strong></div><div class="cell"><img alt="${c.name}" src="${c.image}" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px"></div></div>
+            <div class="row"><div class="cell">Year</div><div class="cell">${c.year}</div></div>
+            <div class="row"><div class="cell">Horsepower</div><div class="cell">${c.hp} hp</div></div>
+            <div class="row"><div class="cell">Price</div><div class="cell">${formatCurrency(c.price)}</div></div>
+          </div>
+        `).join('');
+      }
+      const series = list.map(c => ({ label: c.name, value: c.hp }));
+      const canvas = document.getElementById('hp-chart');
+      canvas.dataset.series = JSON.stringify(series);
+      CarSpotter.drawBarChart(canvas, series);
+    }
+    window.addEventListener('compare:update', render);
+    document.addEventListener('DOMContentLoaded', render);
+  </script>
+</body>
+</html>
+
+

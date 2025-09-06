@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catalog • CarSpotter</title>
+  <link rel="stylesheet" href="carspotter.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="carspotter(main-page).html"><span class="dot"></span>CarSpotter</a>
+      <nav>
+        <a href="carspotter(catalog-page).html">Catalog</a>
+        <a href="carspotter(compare-page).html">Compare</a>
+        <a href="carspotter(blog-page).html">News</a>
+        <a href="carspotter(events-page).html">Events</a>
+        <a href="carspotter(events-page).html" class="cta">About / Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container section-title">
+      <h1>Catalog</h1>
+      <span class="chip neon">Filters</span>
+    </div>
+
+    <form class="container filters" data-filters>
+      <input type="search" name="q" placeholder="Search…">
+      <select name="brand">
+        <option value="">Brand</option>
+        <option>Nissan</option>
+        <option>Porsche</option>
+        <option>BMW</option>
+        <option>Ferrari</option>
+        <option>Mercedes</option>
+      </select>
+      <select name="year">
+        <option value="">Year</option>
+        <option>2024</option>
+        <option>2023</option>
+        <option>2022</option>
+        <option>2021</option>
+        <option>2020</option>
+      </select>
+      <select name="hp">
+        <option value="">Min HP</option>
+        <option>200</option>
+        <option>300</option>
+        <option>400</option>
+        <option>500</option>
+      </select>
+      <input type="number" name="priceMax" placeholder="Max Price ($)">
+    </form>
+
+    <div class="space"></div>
+    <div class="container grid cards-3" id="catalog-grid"></div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container inner">
+      <div class="row"><span class="brand"><span class="dot"></span>CarSpotter</span><span class="muted">Browse the grid</span></div>
+      <div class="row"><a href="carspotter(about-page).html">About</a><a href="carspotter(contact-page).html">Contact</a></div>
+    </div>
+  </footer>
+
+  <script src="carspotter.js"></script>
+  <script>
+    const CARS = [
+      { id: 'gtr', name: 'Nissan GT-R', brand: 'Nissan', year: 2020, hp: 565, price: 95000, image:  Link of image },
+      { id: '911', name: 'Porsche 911 Carrera', brand: 'Porsche', year: 2022, hp: 379, price: 106000, image:  },
+      { id: 'm4', name: 'BMW M4 Competition', brand: 'BMW', year: 2021, hp: 503, price: 78000, image:  },
+      { id: 'amg', name: 'Mercedes-AMG GT', brand: 'Mercedes', year: 2020, hp: 523, price: 119000, image:  },
+      { id: 'f8', name: 'Ferrari F8 Tributo', brand: 'Ferrari', year: 2021, hp: 710, price: 276000, image: },
+    ];
+
+    function card(car){
+      return `
+      <article class="card hover-rise">
+        <a href="detail.html?id=${car.id}" class="media"><img alt="${car.name}" src="${car.image}"></a>
+        <div class="content">
+          <h3>${car.name}</h3>
+          <div class="meta"><span>${car.brand}</span><span>•</span><span>${car.year}</span><span>•</span><span>${car.hp} hp</span><span>•</span><span>${formatCurrency(car.price)}</span></div>
+        </div>
+      </article>`;
+    }
+
+    function applyFilters(q){
+      let list = CARS.slice();
+      if(q.q){ const t = q.q.toLowerCase(); list = list.filter(c => c.name.toLowerCase().includes(t) || c.brand.toLowerCase().includes(t)); }
+      if(q.brand){ list = list.filter(c => c.brand === q.brand); }
+      if(q.year){ list = list.filter(c => c.year >= Number(q.year)); }
+      if(q.hp){ list = list.filter(c => c.hp >= Number(q.hp)); }
+      if(q.priceMax){ list = list.filter(c => c.price <= Number(q.priceMax)); }
+      return list;
+    }
+
+    function render(){
+      const q = getQueryObject();
+      const list = applyFilters(q);
+      const grid = document.getElementById('catalog-grid');
+      grid.innerHTML = list.map(card).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      render();
+      document.querySelector('[data-filters]')?.addEventListener('filters:change', render);
+    });
+  </script>
+</body>
+</html>
+
+
